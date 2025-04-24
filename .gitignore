@@ -1,0 +1,13 @@
+build/
+sdkconfig
+sdkconfig.old
+*.json
+*.txt
+Dockerfile
+*.pyc
+*.pyo
+*.log
+*.bak
+*.swp
+*.swo
+*.tmp
