@@ -1,7 +1,30 @@
 #include <stdio.h>
 #include "Si7021_Component.h"
 
-void func(void)
-{
+i2c_master_bus_handle_t si7021_i2c_bus_handle;
+i2c_master_dev_handle_t si7021_i2c_dev_handle;
 
+uint8_t si7021_humidity[2];
+const uint8_t si7021_measure = si7021_measure_humidity_hold_master_mode;
+
+void si7021_init(void)
+{
+    i2c_init(&si7021_i2c_bus_handle, &si7021_i2c_dev_handle, si7021_address, GPIO_NUM_5, GPIO_NUM_6);
+}
+
+void si7021_read(void)
+{
+    i2c_send_read_data(si7021_i2c_dev_handle, &si7021_measure, ONE_BYTE, si7021_humidity, TWO_BYTES);
+    
+    float humidity = si7021_convert_humidity(si7021_humidity[0], si7021_humidity[1]);
+    printf("Humidity: %.2f %%RH\n", humidity);
+}
+
+float si7021_convert_humidity(uint8_t msb, uint8_t lsb)
+{
+    uint16_t raw_humidity = ((uint16_t)msb << 8) | lsb;
+
+    float humidity = ((125.0f * raw_humidity) / 65536.0f) - 6.0f;
+
+    return humidity;
 }
