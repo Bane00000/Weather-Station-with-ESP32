@@ -17,4 +17,5 @@ extern uint8_t si7021_humidity[2];
 
 void si7021_init(void);
 void si7021_read(void);
+void si7021_read_hold_mode(void);
 float si7021_convert_humidity(uint8_t msb, uint8_t lsb);

@@ -17,7 +17,7 @@ void si7021_task(void* pvParameters);
 /*!                       MAIN function                                       */
 void app_main(void)
 {
-    /*status = xTaskCreate(mq135_task, "MQ135", 200, NULL, 2, NULL);
+    /*tatus = xTaskCreate(mq135_task, "MQ135", 2048, NULL, 2, NULL);
     configASSERT(status == pdPASS);*/
 
     status = xTaskCreate(si7021_task, "SI7021", 2048, NULL, 2, NULL);
@@ -43,7 +43,7 @@ void si7021_task(void* pvParameters)
 
     while(1)
     {
-        si7021_read();
+        si7021_read_hold_mode();
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
