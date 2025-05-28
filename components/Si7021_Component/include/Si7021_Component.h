@@ -13,9 +13,9 @@ extern const uint8_t si7021_measure;
 extern i2c_master_bus_handle_t si7021_i2c_bus_handle;
 extern i2c_master_dev_handle_t si7021_i2c_dev_handle;
 
-extern uint8_t si7021_humidity[2];
+extern uint8_t si7021_humidity[3];
 
 void si7021_init(void);
-void si7021_read(void);
 void si7021_read_hold_mode(void);
 float si7021_convert_humidity(uint8_t msb, uint8_t lsb);
+uint8_t si7021_crc8(const uint8_t *data, uint8_t length);

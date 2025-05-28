@@ -2,6 +2,7 @@
 
 #define ONE_BYTE    1
 #define TWO_BYTES   2
+#define THREE_BYTES 3
 
 /*
 Extern Declarations
