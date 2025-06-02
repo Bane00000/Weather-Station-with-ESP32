@@ -17,7 +17,7 @@ void si7021_task(void* pvParameters);
 /*!                       MAIN function                                       */
 void app_main(void)
 {
-    /*tatus = xTaskCreate(mq135_task, "MQ135", 2048, NULL, 2, NULL);
+    /*status = xTaskCreate(mq135_task, "MQ135", 2048, NULL, 2, NULL);
     configASSERT(status == pdPASS);*/
 
     status = xTaskCreate(si7021_task, "SI7021", 2048, NULL, 2, NULL);

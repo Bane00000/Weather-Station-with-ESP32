@@ -7,13 +7,22 @@ i2c_master_dev_handle_t si7021_i2c_dev_handle;
 
 uint8_t si7021_humidity[3];
 const uint8_t si7021_measure = si7021_measure_humidity_hold_master_mode;
-const uint8_t si7021_measure_no_hold_master_mode = si7021_measure_humidity_no_hold_master_mode;
 
+/**
+  * @brief  Initializes Si7021 sensor
+  * @param  /
+  * @retval void
+  */
 void si7021_init(void)
 {
     i2c_init(&si7021_i2c_bus_handle, &si7021_i2c_dev_handle, si7021_address, GPIO_NUM_5, GPIO_NUM_6);
 }
 
+/**
+  * @brief  Get humidity in hold master mode
+  * @param  /
+  * @retval void
+  */
 void si7021_read_hold_mode(void)
 {
     i2c_send_data(si7021_i2c_dev_handle, &si7021_measure, ONE_BYTE);
@@ -31,6 +40,12 @@ void si7021_read_hold_mode(void)
     printf("Humidity: %.2f %%RH\n", humidity);
 }
 
+/**
+  * @brief  Converts raw data into human readable format
+  * @param  msb Most significat byte
+  * @param  lsb Least significat byte
+  * @retval float
+  */
 float si7021_convert_humidity(uint8_t msb, uint8_t lsb)
 {
     uint16_t raw_humidity = ((uint16_t)msb << 8) | lsb;
@@ -40,6 +55,12 @@ float si7021_convert_humidity(uint8_t msb, uint8_t lsb)
     return humidity;
 }
 
+/**
+  * @brief  Calculate the checksum byte
+  * @param  data Raw humidty data
+  * @param  length Size in bytes
+  * @retval uint8_t
+  */
 uint8_t si7021_crc8(const uint8_t *data, uint8_t length)
 {
     uint8_t crc = 0x00;

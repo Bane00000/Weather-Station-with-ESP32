@@ -17,5 +17,4 @@ extern adc_bitwidth_t adc_bitdiwth_mq135;
     Function declarations
 */
 void mq135_init(void);
-
 void mq135_read(void);
