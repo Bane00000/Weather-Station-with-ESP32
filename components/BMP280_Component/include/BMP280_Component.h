@@ -12,25 +12,30 @@ Addresses
 #define bmp280_reset        0xE0
 #define bmp280_id           0xD0
 #define bmp280_address      0x76 // If connected to VDDIO then slave address ix 0x77. With 0x76 it's connected to ground. 5.2
-#define DISABLE_TEMPERATURE 0x1F
+#define bmp280_setup        0x06 // Disable temperature, enable pressure and choose force mode
 
 /*
-I2C handles
+BMP280 struct
 */
-extern i2c_master_bus_handle_t bmp280_bus_handle;
-extern i2c_master_dev_handle_t bmp280_dev_handle;
+typedef struct
+{
+    i2c_master_bus_handle_t bmp280_bus_handle;
+    i2c_master_dev_handle_t bmp280_dev_handle;
+    uint8_t address;
+    uint8_t ctrl_meas;
+    uint8_t config;
+    uint8_t setup_commands;
+    gpio_num_t SCL;
+    gpio_num_t SDA;
+    i2c_master_transmit_multi_buffer_info_t transmit_setup[4];
+    uint8_t config_reg_val;
 
-/*
-Data commands
-*/
-extern i2c_master_transmit_multi_buffer_info_t disable_temp[2];
-
-extern uint8_t ctrl_meas;
-extern uint8_t disable_command;
+} bmp280_t;
 
 /*
 Function declarations
 */
 void bmp280_init(void);
-void bmp280_temperature_setup(void);
-void bmp280_pressure_setup(void);
+void bmp280_prepare_transmit_setup(void);
+void bmp280_config_regs(void);
+void bmp280_start_measure(void);
