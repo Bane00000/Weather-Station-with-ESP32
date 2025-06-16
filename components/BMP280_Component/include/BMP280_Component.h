@@ -67,3 +67,4 @@ void bmp280_compensation_parameters(void);
 void bmp280_read_raw_data(void);
 int32_t bmp280_compensate_T_int32(int32_t adc_T);
 uint32_t bmp280_compensate_P_int64(int32_t adc_P);
+void bmp280_start(void);

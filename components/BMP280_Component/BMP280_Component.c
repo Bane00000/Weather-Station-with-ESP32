@@ -19,13 +19,13 @@ void bmp280_init(void)
 
     i2c_init(&bmp280.bmp280_bus_handle, &bmp280.bmp280_dev_handle, bmp280.address, bmp280.SCL, bmp280.SDA);
 
-    i2c_send_data(bmp280.bmp280_dev_handle, &bmp280.config, ONE_BYTE);
-    i2c_read_data(bmp280.bmp280_dev_handle, &bmp280.config_reg_val, ONE_BYTE);
+    i2c_send_read_data(bmp280.bmp280_dev_handle, &bmp280.config, ONE_BYTE, &bmp280.config_reg_val, ONE_BYTE);
 
     bmp280.config_reg_val &= ~(0b111 << 2);  // Clear bits 4:2
     bmp280.config_reg_val |= (0 << 2);      // Set filter = 000 (OFF)
 
     bmp280_prepare_transmit_setup();
+    bmp280_config_regs();
 }
 
 /*
@@ -65,8 +65,7 @@ Get calibration parameters for the compensation formula
 */
 void bmp280_compensation_parameters(void)
 {
-    i2c_send_data(bmp280.bmp280_dev_handle, &bmp280.calib, ONE_BYTE); // check if this generates STOP condition
-    i2c_read_data(bmp280.bmp280_dev_handle, &bmp280.calib_data, 26);
+    i2c_send_read_data(bmp280.bmp280_dev_handle, &bmp280.calib, ONE_BYTE, bmp280.calib_data, 26); // no stop condition
 
     bmp280.dig_T1 = (uint16_t)(bmp280.calib_data[1] << 8 | bmp280.calib_data[0]);
     bmp280.dig_T2 = (int16_t)(bmp280.calib_data[3] << 8 | bmp280.calib_data[2]);
@@ -84,8 +83,7 @@ void bmp280_compensation_parameters(void)
 
 void bmp280_read_raw_data(void)
 {
-    i2c_send_data(bmp280.bmp280_dev_handle, &bmp280.temp_reg_address, ONE_BYTE);
-    i2c_read_data(bmp280.bmp280_dev_handle, &bmp280.raw_data, 6);
+    i2c_send_read_data(bmp280.bmp280_dev_handle, &bmp280.temp_reg_address, ONE_BYTE, bmp280.raw_data, 6);
 
     bmp280.adc_P = ((int32_t)bmp280.raw_data[0] << 12) | ((int32_t)bmp280.raw_data[1] << 4) | (bmp280.raw_data[2] >> 4);
     bmp280.adc_T = ((int32_t)bmp280.raw_data[3] << 12) | ((int32_t)bmp280.raw_data[4] << 4) | (bmp280.raw_data[5] >> 4);
@@ -123,4 +121,12 @@ uint32_t bmp280_compensate_P_int64(int32_t adc_P)
     p = ((p + var1 + var2) >> 8) + (((int64_t)bmp280.dig_P7) << 4);
 
     return (uint32_t)p;  // pressure in Pa (Pascal), Q24.8 format
+}
+
+void bmp280_start(void)
+{
+    bmp280_compensation_parameters();
+    bmp280_read_raw_data();
+    bmp280_compensate_T_int32(bmp280.adc_T);
+    bmp280_compensate_P_int64(bmp280.adc_P);
 }
